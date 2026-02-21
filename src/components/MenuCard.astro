@@ -29,8 +29,8 @@ const emoji = categoryEmojis[item.category] ?? '🍽️';
 <a href={`/plato/${slug}`} class="card" data-category={item.category}>
   <div class="img-wrap">
     {item.image
-      ? <img src={item.image} alt={item.name} loading="lazy" />
-      : <div class="img-placeholder">{emoji}</div>
+      ? <img src={item.image} alt={item.name} loading="lazy" transition:name={`hero-${slug}`} />
+      : <div class="img-placeholder" transition:name={`hero-${slug}`}>{emoji}</div>
     }
   </div>
   <div class="info">

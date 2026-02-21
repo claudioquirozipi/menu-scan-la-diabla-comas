@@ -134,91 +134,89 @@ const { name, phone, locations, social_media, menu_categories, menu_items } = da
 </style>
 
 <script>
-  // Tomamos el control del scroll — desactivamos la restauración automática del browser
-  history.scrollRestoration = 'manual';
+  function setup() {
+    const toggleBtn   = document.getElementById('search-toggle') as HTMLButtonElement;
+    const searchBar   = document.getElementById('search-bar')    as HTMLDivElement;
+    const searchInput = document.getElementById('search-input')  as HTMLInputElement;
+    const iconSearch  = document.getElementById('icon-search')   as HTMLElement;
+    const iconClose   = document.getElementById('icon-close')    as HTMLElement;
+    const emptyState  = document.getElementById('empty-state')   as HTMLElement;
 
-  const toggleBtn   = document.getElementById('search-toggle') as HTMLButtonElement;
-  const searchBar   = document.getElementById('search-bar')    as HTMLDivElement;
-  const searchInput = document.getElementById('search-input')  as HTMLInputElement;
-  const iconSearch  = document.getElementById('icon-search')   as SVGElement;
-  const iconClose   = document.getElementById('icon-close')    as SVGElement;
-  const emptyState  = document.getElementById('empty-state')   as HTMLParagraphElement;
+    const pills = document.querySelectorAll<HTMLButtonElement>('.pill');
+    const cards = document.querySelectorAll<HTMLElement>('.card');
 
-  const pills = document.querySelectorAll<HTMLButtonElement>('.pill');
-  const cards = document.querySelectorAll<HTMLElement>('.card');
+    let activeCategory = 'todos';
+    let searchText = '';
 
-  let activeCategory = 'todos';
-  let searchText = '';
-
-  function applyFilters() {
-    let visible = 0;
-    cards.forEach(card => {
-      const matchCat  = activeCategory === 'todos' || card.dataset.category === activeCategory;
-      const cardName  = card.querySelector('.name')?.textContent?.toLowerCase() ?? '';
-      const matchText = cardName.includes(searchText);
-      const show = matchCat && matchText;
-      card.style.display = show ? '' : 'none';
-      if (show) visible++;
-    });
-    emptyState.hidden = visible > 0;
-  }
-
-  // Filtro por categoría
-  pills.forEach(pill => {
-    pill.addEventListener('click', () => {
-      activeCategory = pill.dataset.category ?? 'todos';
-      pills.forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      applyFilters();
-    });
-  });
-
-  // Toggle barra de búsqueda
-  toggleBtn?.addEventListener('click', () => {
-    const isOpen = !searchBar.hidden;
-    if (isOpen) {
-      searchBar.hidden = true;
-      iconSearch.style.display = '';
-      iconClose.style.display  = 'none';
-      toggleBtn.setAttribute('aria-expanded', 'false');
-      searchInput.value = '';
-      searchText = '';
-      applyFilters();
-    } else {
-      searchBar.hidden = false;
-      iconSearch.style.display = 'none';
-      iconClose.style.display  = '';
-      toggleBtn.setAttribute('aria-expanded', 'true');
-      searchInput.focus();
+    function applyFilters() {
+      let visible = 0;
+      cards.forEach(card => {
+        const matchCat  = activeCategory === 'todos' || card.dataset.category === activeCategory;
+        const cardName  = card.querySelector('.name')?.textContent?.toLowerCase() ?? '';
+        const matchText = cardName.includes(searchText);
+        const show = matchCat && matchText;
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      emptyState.hidden = visible > 0;
     }
-  });
 
-  // Filtro por texto
-  searchInput?.addEventListener('input', () => {
-    searchText = searchInput.value.toLowerCase().trim();
-    applyFilters();
-  });
-
-  // Cerrar búsqueda con Escape
-  searchInput?.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') toggleBtn.click();
-  });
-
-  // --- Scroll restoration ---
-
-  // Al hacer click en una card, guardamos el scroll antes de navegar
-  cards.forEach(card => {
-    card.addEventListener('click', () => {
-      sessionStorage.setItem('menuScrollY', String(window.scrollY));
+    // Filtro por categoría
+    pills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        activeCategory = pill.dataset.category ?? 'todos';
+        pills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        applyFilters();
+      });
     });
-  });
 
-  // Al volver (back), restauramos el scroll guardado
-  const savedY = sessionStorage.getItem('menuScrollY');
-  if (savedY !== null) {
-    sessionStorage.removeItem('menuScrollY');
-    requestAnimationFrame(() => {
-      window.scrollTo({ top: Number(savedY), behavior: 'instant' });
+    // Toggle barra de búsqueda
+    toggleBtn?.addEventListener('click', () => {
+      const isOpen = !searchBar.hidden;
+      if (isOpen) {
+        searchBar.hidden = true;
+        iconSearch.style.display = '';
+        iconClose.style.display  = 'none';
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        searchInput.value = '';
+        searchText = '';
+        applyFilters();
+      } else {
+        searchBar.hidden = false;
+        iconSearch.style.display = 'none';
+        iconClose.style.display  = '';
+        toggleBtn.setAttribute('aria-expanded', 'true');
+        searchInput.focus();
+      }
     });
+
+    // Filtro por texto
+    searchInput?.addEventListener('input', () => {
+      searchText = searchInput.value.toLowerCase().trim();
+      applyFilters();
+    });
+
+    // Cerrar búsqueda con Escape
+    searchInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') toggleBtn.click();
+    });
+
+    // Guardar scroll al entrar en un plato
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        sessionStorage.setItem('menuScrollY', String(window.scrollY));
+      });
+    });
+
+    // Restaurar scroll al volver (fallback por si Astro VT no lo maneja)
+    const savedY = sessionStorage.getItem('menuScrollY');
+    if (savedY !== null) {
+      sessionStorage.removeItem('menuScrollY');
+      requestAnimationFrame(() => window.scrollTo(0, Number(savedY)));
+    }
   }
+
+  // Con View Transitions activo, astro:page-load se dispara en cada navegación
+  document.addEventListener('astro:page-load', setup);
 </script>

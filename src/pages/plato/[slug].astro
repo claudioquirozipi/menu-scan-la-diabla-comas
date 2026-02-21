@@ -21,6 +21,7 @@ interface Props {
 }
 
 const { item } = Astro.props;
+const { slug } = Astro.params;
 
 const categoryEmojis: Record<string, string> = {
   'Hamburguesas': '🍔',
@@ -49,9 +50,9 @@ const waUrl = `https://wa.me/51926875390?text=${waText}`;
         </svg>
       </a>
       {item.image
-        ? <img src={item.image} alt={item.name} class="hero-img" />
+        ? <img src={item.image} alt={item.name} class="hero-img" transition:name={`hero-${slug}`} />
         : (
-          <div class="hero-placeholder">
+          <div class="hero-placeholder" transition:name={`hero-${slug}`}>
             <span class="hero-emoji">{emoji}</span>
           </div>
         )
