@@ -1,0 +1,53 @@
+---
+interface Props {
+  categories: string[];
+}
+const { categories } = Astro.props;
+---
+<div class="filter-wrapper">
+  <div class="filter-track">
+    <button class="pill active" data-category="todos">Todos</button>
+    {categories.map(cat => (
+      <button class="pill" data-category={cat}>{cat}</button>
+    ))}
+  </div>
+</div>
+
+<style>
+  .filter-wrapper {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 0.75rem 1rem;
+  }
+
+  .filter-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-track {
+    display: flex;
+    gap: 0.5rem;
+    width: max-content;
+  }
+
+  .pill {
+    flex-shrink: 0;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--color-red);
+    background: transparent;
+    color: var(--color-red);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+
+  .pill.active {
+    background: var(--color-red);
+    color: var(--color-white);
+  }
+</style>

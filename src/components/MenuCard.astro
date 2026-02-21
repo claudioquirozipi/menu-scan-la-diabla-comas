@@ -1,0 +1,115 @@
+---
+interface Props {
+  item: {
+    name: string;
+    description: string;
+    price: number;
+    category: string;
+    image: string;
+  };
+  slug: string;
+}
+const { item, slug } = Astro.props;
+
+const categoryEmojis: Record<string, string> = {
+  'Hamburguesas': '🍔',
+  'Salchipapas': '🍟',
+  'Parrillas': '🔥',
+  'Cocteles': '🍹',
+  'Margaritas': '🍹',
+  'Pisco Sour': '🥃',
+  'Barra de Destilados': '🥃',
+  'Mojitos': '🍃',
+  'Cervezas': '🍺',
+  'Botellas': '🍷',
+};
+
+const emoji = categoryEmojis[item.category] ?? '🍽️';
+---
+<a href={`/plato/${slug}`} class="card" data-category={item.category}>
+  <div class="img-wrap">
+    {item.image
+      ? <img src={item.image} alt={item.name} loading="lazy" />
+      : <div class="img-placeholder">{emoji}</div>
+    }
+  </div>
+  <div class="info">
+    <p class="name">{item.name}</p>
+    {item.description && <p class="desc">{item.description}</p>}
+    <p class="price">S/ {item.price}</p>
+  </div>
+</a>
+
+<style>
+  .card {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    background: var(--color-card);
+    border-radius: 12px;
+    overflow: hidden;
+    padding: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    transition: transform 0.15s;
+  }
+
+  .card:active {
+    transform: scale(0.98);
+  }
+
+  .img-wrap {
+    flex-shrink: 0;
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .img-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.25rem;
+  }
+
+  .info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .name {
+    font-family: var(--font-title);
+    font-size: 0.95rem;
+    color: var(--color-white);
+    line-height: 1.3;
+  }
+
+  .desc {
+    font-size: 0.8rem;
+    color: var(--color-gray);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+  }
+
+  .price {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-red);
+    margin-top: 0.25rem;
+  }
+</style>
