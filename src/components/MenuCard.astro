@@ -27,11 +27,27 @@ const categoryEmojis: Record<string, string> = {
 const emoji = categoryEmojis[item.category] ?? '🍽️';
 ---
 <a href={`/plato/${slug}`} class="card" data-category={item.category}>
-  <div class="img-wrap">
-    {item.image
-      ? <img src={item.image} alt={item.name} loading="lazy" transition:name={`hero-${slug}`} />
-      : <div class="img-placeholder" transition:name={`hero-${slug}`}>{emoji}</div>
-    }
+  <div class="img-wrap" transition:name={`hero-${slug}`}>
+    {item.image ? (
+      <Fragment>
+        <img
+          src={item.image}
+          alt={item.name}
+          loading="lazy"
+          class="card-img"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+        />
+        <div class="img-error">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#484848" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="7" y1="2" x2="7" y2="8"/><line x1="5" y1="2" x2="5" y2="6"/><line x1="9" y1="2" x2="9" y2="6"/>
+            <path d="M5 6 Q7 9 9 6"/><line x1="7" y1="8" x2="7" y2="22"/>
+            <line x1="17" y1="2" x2="17" y2="22"/><path d="M14 2 Q14 9 17 9"/>
+          </svg>
+        </div>
+      </Fragment>
+    ) : (
+      <div class="img-placeholder">{emoji}</div>
+    )}
   </div>
   <div class="info">
     <p class="name">{item.name}</p>
@@ -67,20 +83,29 @@ const emoji = categoryEmojis[item.category] ?? '🍽️';
     overflow: hidden;
   }
 
-  .img-wrap img {
+  .card-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
   }
 
-  .img-placeholder {
+  .img-placeholder,
+  .img-error {
     width: 100%;
     height: 100%;
     background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .img-placeholder {
     font-size: 2.25rem;
+  }
+
+  .img-error {
+    display: none;
   }
 
   .info {
