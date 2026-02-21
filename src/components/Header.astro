@@ -1,15 +1,19 @@
 ---
-interface Props {
-  restaurantName: string;
-}
-const { restaurantName } = Astro.props;
+import { Image } from 'astro:assets';
+import logo from '../assets/logo.jpg';
 ---
 <header>
-  <span class="name">{restaurantName}</span>
-  <button class="search-btn" aria-label="Buscar">
-    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <a href="/" class="logo-link">
+    <Image src={logo} alt="La Diabla Borracha" height={44} class="logo" />
+  </a>
+  <button id="search-toggle" class="search-btn" aria-label="Buscar" aria-expanded="false">
+    <svg id="icon-search" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="11" cy="11" r="8"/>
       <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <svg id="icon-close" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+      <line x1="18" y1="6" x2="6" y2="18"/>
+      <line x1="6" y1="6" x2="18" y2="18"/>
     </svg>
   </button>
 </header>
@@ -30,11 +34,15 @@ const { restaurantName } = Astro.props;
     border-bottom: 1px solid var(--color-border);
   }
 
-  .name {
-    font-family: var(--font-title);
-    font-size: 1.1rem;
-    color: var(--color-red);
-    line-height: 1;
+  .logo-link {
+    display: flex;
+    align-items: center;
+  }
+
+  .logo {
+    height: 44px;
+    width: auto;
+    object-fit: contain;
   }
 
   .search-btn {

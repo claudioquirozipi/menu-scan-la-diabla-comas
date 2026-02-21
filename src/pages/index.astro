@@ -11,10 +11,18 @@ const { name, phone, locations, social_media, menu_categories, menu_items } = da
 ---
 
 <Layout title={`${name} — Menú Digital`}>
-  <Header restaurantName={name} />
+  <Header />
 
   <main>
     <div class="filter-sticky">
+      <div class="search-bar" id="search-bar" hidden>
+        <input
+          type="search"
+          id="search-input"
+          placeholder="Buscar en el menú..."
+          autocomplete="off"
+        />
+      </div>
       <CategoryFilter categories={menu_categories} />
     </div>
 
@@ -23,6 +31,8 @@ const { name, phone, locations, social_media, menu_categories, menu_items } = da
         <MenuCard item={item} slug={slugify(item.name)} />
       ))}
     </section>
+
+    <p class="empty-state" id="empty-state" hidden>No se encontraron productos 🔍</p>
 
     <Footer {name} {phone} {locations} {social_media} />
   </main>
@@ -55,11 +65,48 @@ const { name, phone, locations, social_media, menu_categories, menu_items } = da
     border-bottom: 1px solid var(--color-border);
   }
 
+  .search-bar {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .search-bar input {
+    width: 100%;
+    background: #2a2a2a;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 0.55rem 0.875rem;
+    color: var(--color-white);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    outline: none;
+  }
+
+  .search-bar input:focus {
+    border-color: var(--color-red);
+  }
+
+  .search-bar input::placeholder {
+    color: var(--color-gray);
+  }
+
+  /* ocultar el botón nativo × del input search en Chrome */
+  .search-bar input::-webkit-search-cancel-button {
+    display: none;
+  }
+
   .grid {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
     padding: 1rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--color-gray);
+    font-size: 1rem;
   }
 
   .whatsapp-btn {
@@ -78,7 +125,7 @@ const { name, phone, locations, social_media, menu_categories, menu_items } = da
     font-weight: 600;
     font-size: 0.9rem;
     box-shadow: 0 4px 16px rgba(37,211,102,0.4);
-    transition: transform 0.15s, box-shadow 0.15s;
+    transition: transform 0.15s;
   }
 
   .whatsapp-btn:active {
@@ -87,18 +134,70 @@ const { name, phone, locations, social_media, menu_categories, menu_items } = da
 </style>
 
 <script>
+  const toggleBtn   = document.getElementById('search-toggle') as HTMLButtonElement;
+  const searchBar   = document.getElementById('search-bar')    as HTMLDivElement;
+  const searchInput = document.getElementById('search-input')  as HTMLInputElement;
+  const iconSearch  = document.getElementById('icon-search')   as SVGElement;
+  const iconClose   = document.getElementById('icon-close')    as SVGElement;
+  const emptyState  = document.getElementById('empty-state')   as HTMLParagraphElement;
+
   const pills = document.querySelectorAll<HTMLButtonElement>('.pill');
   const cards = document.querySelectorAll<HTMLElement>('.card');
 
+  let activeCategory = 'todos';
+  let searchText = '';
+
+  function applyFilters() {
+    let visible = 0;
+    cards.forEach(card => {
+      const matchCat  = activeCategory === 'todos' || card.dataset.category === activeCategory;
+      const cardName  = card.querySelector('.name')?.textContent?.toLowerCase() ?? '';
+      const matchText = cardName.includes(searchText);
+      const show = matchCat && matchText;
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    emptyState.hidden = visible > 0;
+  }
+
+  // Filtro por categoría
   pills.forEach(pill => {
     pill.addEventListener('click', () => {
-      const cat = pill.dataset.category;
+      activeCategory = pill.dataset.category ?? 'todos';
       pills.forEach(p => p.classList.remove('active'));
       pill.classList.add('active');
-      cards.forEach(card => {
-        const show = cat === 'todos' || card.dataset.category === cat;
-        (card as HTMLElement).style.display = show ? '' : 'none';
-      });
+      applyFilters();
     });
+  });
+
+  // Toggle barra de búsqueda
+  toggleBtn?.addEventListener('click', () => {
+    const isOpen = !searchBar.hidden;
+    if (isOpen) {
+      searchBar.hidden = true;
+      iconSearch.style.display = '';
+      iconClose.style.display  = 'none';
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      searchInput.value = '';
+      searchText = '';
+      applyFilters();
+    } else {
+      searchBar.hidden = false;
+      iconSearch.style.display = 'none';
+      iconClose.style.display  = '';
+      toggleBtn.setAttribute('aria-expanded', 'true');
+      searchInput.focus();
+    }
+  });
+
+  // Filtro por texto
+  searchInput?.addEventListener('input', () => {
+    searchText = searchInput.value.toLowerCase().trim();
+    applyFilters();
+  });
+
+  // Cerrar búsqueda con Escape
+  searchInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') toggleBtn.click();
   });
 </script>
