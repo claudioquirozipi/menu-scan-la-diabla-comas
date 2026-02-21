@@ -3,10 +3,11 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import CategoryFilter from '../components/CategoryFilter.astro';
 import MenuCard from '../components/MenuCard.astro';
+import Footer from '../components/Footer.astro';
 import { slugify } from '../lib/utils.js';
 import data from '../db/la_diabla_info.json';
 
-const { name, menu_categories, menu_items } = data.restaurant;
+const { name, phone, locations, social_media, menu_categories, menu_items } = data.restaurant;
 ---
 
 <Layout title={`${name} — Menú Digital`}>
@@ -22,6 +23,8 @@ const { name, menu_categories, menu_items } = data.restaurant;
         <MenuCard item={item} slug={slugify(item.name)} />
       ))}
     </section>
+
+    <Footer {name} {phone} {locations} {social_media} />
   </main>
 
   <a
@@ -41,7 +44,7 @@ const { name, menu_categories, menu_items } = data.restaurant;
 <style>
   main {
     padding-top: 56px;
-    padding-bottom: 5rem;
+    padding-bottom: 0;
   }
 
   .filter-sticky {
