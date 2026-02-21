@@ -134,7 +134,17 @@ const { name, phone, locations, social_media, menu_categories, menu_items } = da
 </style>
 
 <script>
-  function setup() {
+  // Guardar scroll justo antes de salir del index (solo cuando el menu-grid existe)
+  document.addEventListener('astro:before-preparation', () => {
+    if (document.getElementById('menu-grid')) {
+      sessionStorage.setItem('menuScrollY', String(window.scrollY));
+    }
+  });
+
+  // Setup de interacciones — solo corre cuando estamos en el index
+  document.addEventListener('astro:page-load', () => {
+    if (!document.getElementById('menu-grid')) return;
+
     const toggleBtn   = document.getElementById('search-toggle') as HTMLButtonElement;
     const searchBar   = document.getElementById('search-bar')    as HTMLDivElement;
     const searchInput = document.getElementById('search-input')  as HTMLInputElement;
@@ -202,21 +212,12 @@ const { name, phone, locations, social_media, menu_categories, menu_items } = da
       if (e.key === 'Escape') toggleBtn.click();
     });
 
-    // Guardar scroll al entrar en un plato
-    cards.forEach(card => {
-      card.addEventListener('click', () => {
-        sessionStorage.setItem('menuScrollY', String(window.scrollY));
-      });
-    });
-
-    // Restaurar scroll al volver (fallback por si Astro VT no lo maneja)
+    // Restaurar scroll al volver desde un plato
+    // astro:after-swap resetea el scroll a 0, por eso restauramos aquí en page-load
     const savedY = sessionStorage.getItem('menuScrollY');
     if (savedY !== null) {
       sessionStorage.removeItem('menuScrollY');
-      requestAnimationFrame(() => window.scrollTo(0, Number(savedY)));
+      window.scrollTo(0, Number(savedY));
     }
-  }
-
-  // Con View Transitions activo, astro:page-load se dispara en cada navegación
-  document.addEventListener('astro:page-load', setup);
+  });
 </script>
