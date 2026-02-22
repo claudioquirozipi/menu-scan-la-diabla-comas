@@ -41,7 +41,11 @@ const waText = encodeURIComponent(`Hola! Quiero pedir: ${item.name}`);
 const waUrl = `https://wa.me/51926875390?text=${waText}`;
 ---
 
-<Layout title={`${item.name} — La Diabla Borracha`}>
+<Layout
+  title={`${item.name} — La Diabla Borracha`}
+  description={item.description || `Pide ${item.name} desde S/ ${item.price} en La Diabla Borracha.`}
+  ogImage={item.image || '/logo.jpg'}
+>
   <div class="page">
     <div class="hero">
       <a href="/" class="back-btn" aria-label="Volver al menú">

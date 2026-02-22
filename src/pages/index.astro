@@ -12,7 +12,11 @@ import data from '../db/la_diabla_info.json';
 const { name, phone, locations, social_media, menu_categories, menu_items } = data.restaurant;
 ---
 
-<Layout title={`${name} — Menú Digital`}>
+<Layout
+  title={`${name} — Menú Digital`}
+  description="Hamburguesas artesanales, salchipapas, parrillas, cocteles y más. Pide desde WhatsApp en Comas y Carabayllo."
+  ogImage="/logo.jpg"
+>
   <div class="bg-wrap" aria-hidden="true">
     <Image src={womanImg} alt="" class="bg-img" />
   </div>
